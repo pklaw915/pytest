@@ -14,6 +14,7 @@ class ZhihuSpider(scrapy.CrawlSpider):
 
     def start_request(self):
         pass
+        pass
 
     def parse(self, response):
         pass
