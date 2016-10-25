@@ -9,11 +9,11 @@ class ExampleItem(Item):
     desc = Field()
 
 class ExampleSpider(scrapy.Spider):
-    name = "example"
-    allowed_domains = ["dmoz.org"]
+    name = 'example'
+    allowed_domains = ['dmoz.org']
     start_urls = (
-        "http://www.dmoz.org/Computers/Programming/Languages/Python/Books/",
-        "http://www.dmoz.org/Computers/Programming/Languages/Python/Resources/"
+        'http://www.dmoz.org/Computers/Programming/Languages/Python/Books/',
+        'http://www.dmoz.org/Computers/Programming/Languages/Python/Resources/'
     )
 
     def parse(self, response):
