@@ -1,6 +1,7 @@
 from urllib import request
 from urllib import error
 from bs4 import BeautifulSoup
+from bs4 import re
 
 
 # ex1
@@ -51,7 +52,31 @@ def main_ex2():
 
 
 # ex3
-def get_gif_list_ex3(url):
+def children_and_descendants_ex3():
+    html = request.urlopen('http://www.pythonscraping.com/pages/page3.html')
+    bsObj = BeautifulSoup(html, 'lxml-xml')       # same as 'xml'
+    #for child in bsObj.find("table", {"id": "giftList"}).descendants:   # or children
+    #    print(child)
+    #
+    #for sibling in bsObj.find("table", {"id": "giftList"}).tr.next_siblings:
+    #    print(sibling)
+    #
+    #print(bsObj.find("img", {"src": "../img/gifts/img1.jpg"}).parent.previous_sibling.get_text())
+    #
+    #images = bsObj.findAll("img", {"src": re.compile("\.\.\/img\/gifts/img.*\.jpg")})
+    #for image in images:
+    #    print(image["src"])
+    #
+    #tags = bsObj.findAll(lambda tag:len(tag.attrs)==2)
+    #for tag in tags:
+    #    print(tag.attrs)
+    for link in bsObj.findAll('a'):
+        if 'href' in link.attrs:
+            print(link.attrs['href'])
+
+
+# ex4
+def get_gif_list_ex4(url):
     try:
         html = request.urlopen(url)
     except error.HTTPError as e:
@@ -65,9 +90,10 @@ def get_gif_list_ex3(url):
 
 
 def main_ex3():
-    l = get_gif_list_ex3('')
+    l = get_gif_list_ex4('http://www.pythonscraping.com/pages/page3.html')
 
 
 if __name__ == '__main__':
-    main_ex1()
+    # main_ex1()
     # main_ex2()
+    children_and_descendants_ex3()
