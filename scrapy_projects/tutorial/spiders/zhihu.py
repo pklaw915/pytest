@@ -3,7 +3,7 @@ from scrapy.spiders import CrawlSpider, Rule
 from scrapy.selector import Selector
 from scrapy.linkextractors import LinkExtractor
 from scrapy.http import Request, FormRequest
-from scrapy_tutorial.items import ZhihuItem
+from tutorial.items import ZhihuItem
 
 
 class ZhihuLoginSpider(CrawlSpider):

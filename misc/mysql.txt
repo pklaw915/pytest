@@ -1,0 +1,7 @@
+root		: Testing!			// or "root"
+
+host		: localhost
+user		: pklaw915
+psw			: !Testing
+database	: pytest
+
