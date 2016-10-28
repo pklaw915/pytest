@@ -15,6 +15,13 @@ SPIDER_MODULES = ['tutorial.spiders']
 NEWSPIDER_MODULE = 'tutorial.spiders'
 
 
+# Configure MySQL database
+MYSQL_HOST = 'localhost'
+MYSQL_DBNAME = 'pytest'
+MYSQL_USER = 'pklaw915'
+MYSQL_PASSWD = '!Testing'
+
+
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'tutorial (+http://www.yourdomain.com)'
 
