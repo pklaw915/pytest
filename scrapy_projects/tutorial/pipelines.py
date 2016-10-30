@@ -47,9 +47,10 @@ class MySQLStoreQuotesAuthorPipeline(object):
         ret = conn.fetchone()
 
         if ret:
-            conn.execute("""
-                update quotes_author set name = %s, birthdate = %s, bio = %s where name = %s
-            """, (item['name'], item['birthdate'], item['bio'], item['name']))
+            #conn.execute("""
+            #    update quotes_author set name = %s, birthdate = %s, bio = %s where name = %s
+            #""", (item['name'], item['birthdate'], item['bio'], item['name']))
+            pass
         else:
             conn.execute("""
                 insert into quotes_author(name, birthdate, bio)

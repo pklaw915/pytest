@@ -1,5 +1,5 @@
 use pytest;
-select * from quotes_author;
+select * from quotes_author order by name;
 
 
 

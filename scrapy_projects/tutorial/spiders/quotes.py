@@ -50,7 +50,6 @@ class QuotesAuthorSpider(scrapy.Spider):
     )
     custom_settings = {
         'ITEM_PIPELINES': {'tutorial.pipelines.MySQLStoreQuotesAuthorPipeline': 300},
-
     }
 
     def parse(self, response):
