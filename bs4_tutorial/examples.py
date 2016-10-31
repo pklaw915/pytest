@@ -4,6 +4,11 @@ from bs4 import BeautifulSoup
 from bs4 import re
 
 
+import ssl
+# disable ssl verify in global
+# ssl._create_default_https_context = ssl._create_unverified_context
+
+
 # ex1
 def get_title_ex1(url):
     try:
@@ -76,24 +81,31 @@ def children_and_descendants_ex3():
 
 
 # ex4
-def get_gif_list_ex4(url):
-    try:
-        html = request.urlopen(url)
-    except error.HTTPError as e:
-        return None
-    try:
-        bsObj = BeautifulSoup(html.read(), 'xml')
-        l = bsObj.find_all('span', )
-    except AttributeError as e:
-        return None
-    return l
+def wikipedia_find_links(url):
+    req = request.Request(url)
+    # gcontext = ssl._create_unverified_context()
+    gcontext = ssl.SSLContext(ssl.PROTOCOL_TLSv1)   # Only for gangstars
+    html = request.urlopen(req, context=gcontext)   # pass context to disable ssl verify
+    bsObj = BeautifulSoup(html, 'lxml-xml')
+    for link in bsObj.find("div", {"id": "bodyContent"}).findAll("a", href=re.compile("^(/wiki/)((?!:).)*$")):
+        if 'href' in link.attrs:
+            yield link.attrs['href']
 
 
-def main_ex3():
-    l = get_gif_list_ex4('http://www.pythonscraping.com/pages/page3.html')
+def wikipedia_get_links(articleUrl, pages):
+    newPages = set()
+    for link in wikipedia_find_links("http://en.wikipedia.org"+articleUrl):
+        newPages.add(link)
+    newPages = newPages - pages
+    pages = pages | newPages
+    for newPage in newPages:
+        wikipedia_get_links(newPage, pages)
+
+
+def Kevin_Bacon_Links():
+    pages = set()
+    wikipedia_get_links('/wiki/Kevin_Bacon', pages)
 
 
 if __name__ == '__main__':
-    # main_ex1()
-    # main_ex2()
-    children_and_descendants_ex3()
+    Kevin_Bacon_Links()
