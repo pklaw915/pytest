@@ -2,6 +2,7 @@ from urllib import request
 from urllib import error
 from bs4 import BeautifulSoup
 from bs4 import re
+import json
 
 
 import ssl
@@ -107,5 +108,12 @@ def Kevin_Bacon_Links():
     wikipedia_get_links('/wiki/Kevin_Bacon', pages)
 
 
+def get_ip_json(ipAddress):
+    res = request.urlopen("http://freegeoip.net/json/" + ipAddress).read()
+    res = res.decode('utf-8')
+    return json.loads(res)
+
 if __name__ == '__main__':
-    Kevin_Bacon_Links()
+    # Kevin_Bacon_Links()
+    j = get_ip_json("50.78.253.58")
+    print(j.get("country_code"))
