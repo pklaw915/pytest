@@ -9,7 +9,7 @@ from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 from cryptography.fernet import InvalidToken
 
 
-class KeesCrypto:
+class KeesCrypt:
     def __init__(self, password, salt):
         key = self.generate_key(password.encode(), salt)
         self.fernet = Fernet(key)
@@ -25,14 +25,13 @@ class KeesCrypto:
     def decrypt(self, data):
         return self.fernet.decrypt(data)
 
-class Entry(dict):
+class KeesEntry(dict):
     def __init__(self, seq=None):
         dict.__init__(self)
         self.Title = ''
         self.UserName = ''
         self.Key = b''
         self.Salt = os.urandom(16)
-        self.HideKey = True
         self.URL = ''
         self.Notes = ''
         self.CreationTime = datetime.datetime.now()
@@ -74,14 +73,6 @@ class Entry(dict):
         self['salt'] = salt.hex() if salt else ''
 
     @property
-    def HideKey(self):
-        return self['hidekey']
-
-    @HideKey.setter
-    def HideKey(self, hidepsw):
-        self['hidekey'] = hidepsw
-
-    @property
     def URL(self):
         return self['url']
 
@@ -113,45 +104,34 @@ class Entry(dict):
     def ModificationTime(self, modification):
         self['modification'] = modification.strftime('%Y%m%d %H%M%S')
 
-    def setKey(self, key, password):
-        if password:
-            self.HideKey = True
-            self.Salt = os.urandom(16)
-            crypt = KeesCrypto(password, self.Salt)
-            self.Key = crypt.encrypt(key.encode())
-        else:
-            self.HideKey = False
-            self.Salt = None
-            self.Key = key.encode()
+    def setRawKey(self, key, password):
+        self.Salt = os.urandom(16)
+        crypt = KeesCrypt(password, self.Salt)
+        self.Key = crypt.encrypt(key.encode())
 
-    def getKey(self, password):
-        if self.HideKey:
-            if not password:
-                raise InvalidToken
-            crypt = KeesCrypto(password, self.Salt)
-            return crypt.decrypt(self.Key).decode()
-        else:
-            return self.Key.decode()
+    def getRawKey(self, password):
+        crypt = KeesCrypt(password, self.Salt)
+        return crypt.decrypt(self.Key).decode()
 
 class KeesData(dict):
     def __init__(self, seq=None):
         dict.__init__(self)
         if seq:
             for (k, v) in seq.items():
-                self[k] = Entry(v)
+                self[k] = KeesEntry(v)
 
     @classmethod
     def fromfile(cls, path, password):
         with open(path, mode = 'r') as f:
             js = json.loads(f.read())
-            crypt = KeesCrypto(password, bytes.fromhex(js['s']))
+            crypt = KeesCrypt(password, bytes.fromhex(js['s']))
             data = crypt.decrypt(bytes.fromhex(js['d']))
             return KeesData(json.loads(data.decode()))
 
     def save(self, path, password):
         with open(path, mode = 'w') as f:
             salt = os.urandom(16)
-            crypt = KeesCrypto(password, salt)
+            crypt = KeesCrypt(password, salt)
             data = crypt.encrypt(json.dumps(self).encode())
             js = {}
             js['s'] = salt.hex()
@@ -160,21 +140,19 @@ class KeesData(dict):
 
     def changePassword(self, password, old):
         for (k, v) in self.items():
-            if not v.HideKey:
-                key = v.getKey(old)
-                v.setKey(key, password)
+            key = v.getRawKey(old)
+            v.setRawKey(key, password)
 
 def test_entry():
-    entry = Entry()
+    entry = KeesEntry()
     entry.UserName = 'kylelaw'
-    entry.setKey('123258', '123456')
+    entry.setRawKey('123258', '123456')
     try:
-        key1 = entry.getKey('fdsfds')
+        key1 = entry.getRawKey('fdsfds')
     except InvalidToken as a:
         pass
-    entry.setKey('fdsfdsf', None)
-    key2 = entry.getKey(None)
-
+    entry.setRawKey('fdsfdsf', 'aaaa')
+    key2 = entry.getRawKey('aaaa')
 
 def test_save_load():
     data = KeesData.fromfile('e:\\testing.psw', '123456')
