@@ -14,7 +14,7 @@ async def create_pool(loop, **kw):
         port=kw.get('port', 3306),
         user=kw['user'],
         password=kw['password'],
-        db=kw['db'],
+        db=kw['database'],
         charset=kw.get('charset', 'utf8'),
         autocommit=kw.get('autocommit', True),
         maxsize=kw.get('maxsize', 10),
@@ -237,13 +237,14 @@ async def main(loop):
     await user.save()
     return user.name
 
-loop = asyncio.get_event_loop()
-database = {
-    'host':'172.24.0.2', #数据库的地址
-    'user':'root',
-    'password':'password',
-    'db':'python_test'
-}
-task = asyncio.ensure_future(main(loop))
-res = loop.run_until_complete(task)
-print(res)
+def test_orm():
+    loop = asyncio.get_event_loop()
+    database = {
+        'host':'172.24.0.2', #数据库的地址
+        'user':'root',
+        'password':'password',
+        'db':'python_test'
+    }
+    task = asyncio.ensure_future(main(loop))
+    res = loop.run_until_complete(task)
+    print(res)
