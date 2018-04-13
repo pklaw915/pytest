@@ -156,7 +156,7 @@ class Model(dict, metaclass=ModelMetaclass):
         return value
 
     @classmethod
-    async def find_all(cls, where=None, args=None, **kw):
+    async def findAll(cls, where=None, args=None, **kw):
 
         sql = [cls.__select__]
         if where:
@@ -179,8 +179,8 @@ class Model(dict, metaclass=ModelMetaclass):
                 sql.extend(limit)
             else:
                 raise ValueError('Invalid limit value: %s' % str(limit))
-            rs = await select(' '.join(sql), args)
-            return [cls(**r) for r in rs]
+        rs = await select(' '.join(sql), args)
+        return [cls(**r) for r in rs]
 
     @classmethod
     async def find_number(cls, select_field, where=None, args=None):
