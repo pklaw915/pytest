@@ -9,9 +9,8 @@ from jinja2 import Environment, FileSystemLoader
 import orm
 from coroweb import add_routes, add_static
 
-def index(request):
-    body = '<h1>你好</h1>'
-    return web.Response(body=body.encode('utf-8'), content_type='text/html', charset='utf-8')
+import config
+
 
 def init_jinja2(app, **kw):
     logging.info('init jinja2...')
@@ -84,14 +83,13 @@ def datetime_filter(t):
 
 
 async def init(loop):
-    await orm.create_pool(loop=loop, user='root', password='password', database='awesome')
+    await orm.create_pool(loop=loop, **config.configs['db'])
     app = web.Application(loop=loop, middlewares=[
         logger_factory, response_factory
     ])
     init_jinja2(app, filters=dict(datetime=datetime_filter))
     add_static(app)
     add_routes(app, 'handlers')
-    #app.router.add_route('GET', '/', index)
     srv = await loop.create_server(app.make_handler(), '127.0.0.1', 9000)
     logging.info('server started at http://127.0.0.1:9000...')
     return srv
